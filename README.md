@@ -1,43 +1,32 @@
-# Brent Rates Dashboard (Next.js)
+# Repository Exploration Exercise
 
-Modern full-stack Next.js app (App Router) that displays Brent crude oil rates with:
+## Objective
 
-- Live quote (price, daily change, percent change)
-- Key market stats (open, high, low, previous close, 52-week range, volume)
-- 6-month historical trend chart
-- Backend API route for market data aggregation
+Your task is to explore the repository using **GitHub and Copilot**.
 
-## Stack
+Use Copilot to analyze the codebase and answer the following questions.
 
-- Next.js (App Router, TypeScript)
-- React
-- Tailwind CSS
-- Route Handlers (`/api/brent`)
+⚠️ Do not guess — rely on the repository structure, configuration files, and the code itself.
 
-## Project Structure
+---
 
-- `src/app/page.tsx`: main dashboard page
-- `src/components/brent-dashboard.tsx`: client dashboard logic/UI
-- `src/components/price-chart.tsx`: SVG chart component
-- `src/app/api/brent/route.ts`: backend API endpoint
-- `src/lib/brent.ts`: market data fetching/parsing service
+## Questions to Answer
 
-## Run
+1. **What is the purpose of the application?**
 
-```bash
-npm install
-npm run dev
-```
+2. **What is the technology stack used in the project?**
 
-Then open `http://localhost:3000`.
+3. **Can users create an account or log in to the application?**
 
-## API
+4. **Are the rates updated in real time, or are they retrieved from a static source?**
 
-- Endpoint: `GET /api/brent`
-- Provider: Yahoo Finance (`BZ=F`)
-- Response: normalized JSON snapshot + historical series
+---
 
-## Notes
+## Expected Outcome
 
-- Auto-refresh runs every 60 seconds on the client.
-- You can override the market symbol via `BRENT_SYMBOL` in your environment.
+Be ready to **explain how you found the answers in the code**.
+For each answer, indicate:
+
+- Which files you inspected
+- Which Copilot prompts you used
+- What elements of the code led you to your conclusion
