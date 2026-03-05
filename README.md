@@ -20,6 +20,8 @@ Use Copilot to analyze the codebase and answer the following questions.
 
 4. **Are the rates updated in real time, or are they retrieved from a static source?**
 
+5. **Is the specification /initial-specification well implemented? Is the code close to what was initially specified?**
+
 ---
 
 ## Expected Outcome
