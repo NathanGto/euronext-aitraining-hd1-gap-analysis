@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getBrentSnapshot } from "@/lib/brent";
+import { getBrentSnapshotByCommodity } from "@/lib/brent";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const snapshot = await getBrentSnapshot();
+    const commodity = new URL(request.url).searchParams.get("commodity");
+    const snapshot = await getBrentSnapshotByCommodity({ commodity });
 
     return NextResponse.json(snapshot, {
       headers: {

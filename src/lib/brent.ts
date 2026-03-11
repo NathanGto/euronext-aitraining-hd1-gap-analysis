@@ -1,12 +1,10 @@
+import { CommodityCode, normalizeCommodity } from "@/lib/commodities";
+import { getStaticSnapshot } from "@/lib/mock-snapshots";
 import { BrentHistoryPoint, BrentSnapshot } from "@/lib/types";
 
 const BRENT_SYMBOL = process.env.BRENT_SYMBOL ?? "BZ=F";
-const QUOTE_URL = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(
-  BRENT_SYMBOL
-)}`;
-const CHART_URL = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
-  BRENT_SYMBOL
-)}?interval=1d&range=6mo`;
+const WTI_SYMBOL = process.env.WTI_SYMBOL ?? "CL=F";
+const MARKET_DATA_MODE = (process.env.MARKET_DATA_MODE ?? "hybrid").toLowerCase();
 
 type YahooQuoteRecord = Record<string, unknown>;
 
@@ -53,6 +51,30 @@ type YahooChartResponse = {
     result?: YahooChartResult[];
   };
 };
+
+type SnapshotOptions = {
+  commodity?: string | null;
+};
+
+function getSymbolByCommodity(commodity: CommodityCode): string | null {
+  if (commodity === "WTI") {
+    return WTI_SYMBOL;
+  }
+
+  if (commodity === "BRENT") {
+    return BRENT_SYMBOL;
+  }
+
+  return null;
+}
+
+function getQuoteUrl(symbol: string): string {
+  return `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbol)}`;
+}
+
+function getChartUrl(symbol: string): string {
+  return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=6mo`;
+}
 
 function asNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -118,6 +140,29 @@ function parseHistory(chartResult: YahooChartResult | null): BrentHistoryPoint[]
 }
 
 export async function getBrentSnapshot(): Promise<BrentSnapshot> {
+  return getBrentSnapshotByCommodity({ commodity: "BRENT" });
+}
+
+export async function getBrentSnapshotByCommodity(options?: SnapshotOptions): Promise<BrentSnapshot> {
+  const commodity = normalizeCommodity(options?.commodity);
+  const symbol = getSymbolByCommodity(commodity);
+
+  if (MARKET_DATA_MODE === "static" || !symbol) {
+    return getStaticSnapshot(commodity);
+  }
+
+  try {
+    return await getLiveSnapshot(commodity, symbol);
+  } catch (error) {
+    if (MARKET_DATA_MODE === "hybrid") {
+      return getStaticSnapshot(commodity);
+    }
+
+    throw error;
+  }
+}
+
+async function getLiveSnapshot(commodity: CommodityCode, symbol: string): Promise<BrentSnapshot> {
   const requestInit: RequestInit = {
     cache: "no-store",
     headers: {
@@ -126,8 +171,8 @@ export async function getBrentSnapshot(): Promise<BrentSnapshot> {
   };
 
   const [quoteFetch, chartFetch] = await Promise.allSettled([
-    fetch(QUOTE_URL, requestInit),
-    fetch(CHART_URL, requestInit)
+    fetch(getQuoteUrl(symbol), requestInit),
+    fetch(getChartUrl(symbol), requestInit)
   ]);
 
   const diagnostics: string[] = [];
@@ -226,10 +271,15 @@ export async function getBrentSnapshot(): Promise<BrentSnapshot> {
   ]);
 
   return {
-    symbol: asString(quote?.symbol, asString(meta?.symbol, BRENT_SYMBOL)),
+    commodity,
+    dataSource: "yahoo-live",
+    symbol: asString(quote?.symbol, asString(meta?.symbol, symbol)),
     shortName: asString(
       quote?.shortName,
-      asString(quote?.longName, asString(meta?.shortName, "Brent Crude Oil"))
+      asString(
+        quote?.longName,
+        asString(meta?.shortName, commodity === "WTI" ? "WTI Crude Oil" : "Brent Crude Oil")
+      )
     ),
     currency: asString(quote?.currency, asString(meta?.currency, "USD")),
     exchange: asString(

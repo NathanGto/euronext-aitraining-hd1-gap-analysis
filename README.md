@@ -1,34 +1,39 @@
-# Repository Exploration Exercise
+# Gap Analysis Exercise - Business Analysts
 
-## Objective
+## Context
 
-Your task is to explore the repository using **GitHub and Copilot**.
+You are reviewing a commodity market dashboard project.
+Your mission is to compare:
 
-Use Copilot to analyze the codebase and answer the following questions.
+- the initial specification in [`initial-specification/`](initial-specification/)
+- the implementation in the codebase
 
-⚠️ Do not guess — rely on the repository structure, configuration files, and the code itself.
+Do not assume that everything in UI labels, comments, or docs is accurate.
 
----
+## Deliverable
 
-## Questions to Answer
+Produce a `gap-analysis.md` (or `.txt`) and share your conclusions in Teams.
 
-1. **What is the purpose of the application?**
+Your report must answer:
 
-2. **What is the technology stack used in the project?**
+1. Is `/initial-specification` well implemented? Is code close to the original scope?
+2. What is different between specification and implementation?
+3. What is the purpose of the application?
+4. What is the technology stack?
+5. Can users create an account or log in?
+6. Are rates real-time or static?
 
-3. **Can users create an account or log in to the application?**
+## Investigation Rules
 
-4. **Are the rates updated in real time, or are they retrieved from a static source?**
+- Use repository evidence only.
+- Cite files and code sections that support each conclusion.
+- If behavior and wording conflict, prioritize actual runtime/code behavior.
+- Explicitly list assumptions when evidence is ambiguous.
 
-5. **Is the specification /initial-specification well implemented? Is the code close to what was initially specified?**
+## Suggested Approach
 
----
-
-## Expected Outcome
-
-Be ready to **explain how you found the answers in the code**.
-For each answer, indicate:
-
-- Which files you inspected
-- Which Copilot prompts you used
-- What elements of the code led you to your conclusion
+1. Start with `initial-specification/SPECIFICATION.md`.
+2. Map the application architecture (`src/app`, `src/components`, `src/lib`, config files).
+3. Verify data flow end-to-end (UI -> API route -> external/static source).
+4. Check whether account/auth features are functional or only presented in UI.
+5. Build a requirement-by-requirement gap table.

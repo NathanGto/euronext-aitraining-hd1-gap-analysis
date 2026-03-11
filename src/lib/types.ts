@@ -9,6 +9,8 @@ export type BrentHistoryPoint = {
 };
 
 export type BrentSnapshot = {
+  commodity: string;
+  dataSource: "yahoo-live" | "static-fixture";
   symbol: string;
   shortName: string;
   currency: string;
